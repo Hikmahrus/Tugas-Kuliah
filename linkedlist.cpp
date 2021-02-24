@@ -76,51 +76,58 @@ void autoPush(unsigned long int nim,string nama,string jurusan){
     }
 }
 void print(){
-    Node* temp = new Node;
-    temp = head;
-    while(temp->next != NULL){
-        cout<<" | this : "<<temp<<" | NIM : "<<temp->nim<<" | Nama : "<<temp->nama<<" | Jurusan : "<<temp->jurusan<<" | next : "<<temp->next<<endl;
-        temp = temp->next;
-    }
-    cout<<" | this : "<<temp<<" | NIM : "<<temp->nim<<" | Nama : "<<temp->nama<<" | Jurusan : "<<temp->jurusan<<" | next : "<<temp->next<<endl;
-}
-/*
-! BUG / Error
-! 1. menghapus nim yang tidak ada menyebabkan error (segmentation fault)
-! 2. jika mencoba menghapus satu satu nya nim menyebabkan error (segmentation fault)
-*/
-void deleteNIM(long int nim){
-    Node* prev = head;
-    Node* temp = head->next;
-    Node* next = temp->next;
-    cout<<"before if else statement"<<endl;
     if(isEmpty()){
         cout<<"Data Kosong"<<endl;
     } else {
-        cout<<"inside else"<<endl;
+        Node* temp = new Node;
+        temp = head;
+        while(temp->next != NULL){
+            cout<<" | this : "<<temp<<" | NIM : "<<temp->nim<<" | Nama : "<<temp->nama<<" | Jurusan : "<<temp->jurusan<<" | next : "<<temp->next<<endl;
+            temp = temp->next;
+        }
+        cout<<" | this : "<<temp<<" | NIM : "<<temp->nim<<" | Nama : "<<temp->nama<<" | Jurusan : "<<temp->jurusan<<" | next : "<<temp->next<<endl;
+    }
+}
+void deleteNIM(long int nim){
+    bool deleted = false;
+    if(isEmpty()){
+        cout<<"Data Kosong"<<endl;
+    } else {
+        Node* prev = head;
+        Node* temp = head->next;
         if(head->nim == nim){
             if(head->next != NULL){
                 delete head;
-                head = temp; //! <--- error ?
+                head = temp;
+                cout<<"Data dihapus"<<endl;
             } else {
                 delete head;
+                cout<<"Data dihapus"<<endl;
+                init();
             }
         } else {
-            while(next != NULL){
-                if(temp->nim == nim){
-                    delete temp;
-                    prev->next = next;
-                    break;
-                } else {
-                    prev = prev->next;
-                    temp = temp->next;
-                    next = next->next;
+            if(temp != NULL){
+                Node* next = temp->next;
+                while(next != NULL){
+                    if(temp->nim == nim){
+                        delete temp;
+                        prev->next = next;
+                        deleted = true;
+                        cout<<"Data dihapus"<<endl;
+                        break;
+                    } else {
+                        prev = prev->next;
+                        temp = temp->next;
+                        next = next->next;
+                    }
                 }
-            }
-            cout<<"end while loop"<<endl;
-            if(temp->nim = nim && next == NULL){
-                delete temp;
-                prev->next = NULL;
+                if(temp->nim == nim && next == NULL){
+                    delete temp;
+                    prev->next = NULL;
+                    cout<<"Data dihapus"<<endl;
+                } else if(deleted == false){
+                    cout<<"NIM tidak ditemukan"<<endl;
+                }
             } else {
                 cout<<"NIM tidak ditemukan"<<endl;
             }
