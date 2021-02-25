@@ -1,19 +1,12 @@
 #include<iostream>
+#include<climits>
 using namespace std;
-
-// 1. Memasukkan data mahasiswa kedalam list urut nim
-// 2. Menghapus data mahasiswa dengan nim tertentu dari list
-// 3. Mencetak data mahasiswa
-
-//TODO : fix error
-
 struct Node{
     long int nim;
     string nama;
     string jurusan;
     Node* next;
 };
-
 Node* head = new Node;
 void init(){
     head = NULL;
@@ -29,49 +22,22 @@ void autoPush(unsigned long int nim,string nama,string jurusan){
     temp->nama = nama;
     temp->jurusan = jurusan;
     if(isEmpty()){
-        cout<<"Insert new head"<<endl;
         head = temp;
         head->next = NULL;
+    } else if(head->nim > temp->nim){
+        temp->next = head;
+        head = temp;
     } else {
-        next = head->next;
-        prev = head;
+        next = head;
+        while(next != NULL && temp->nim > next->nim){
+            prev = next;
+            next = next->next;
+        }
         if(next == NULL){
-            if(head->nim > temp->nim){
-                cout<<"Change head"<<endl;
-                temp->next = head;
-                head = temp;
-            } else {
-                cout<<"after new head"<<endl;
-                head->next = temp;
-                temp->next = NULL;
-            }
+            prev->next = temp;
         } else {
-            if(head->nim > temp->nim){
-                cout<<"Change head"<<endl;
-                temp->next = head;
-                head = temp;
-            } else {
-                cout<<"else"<<endl;
-                while(temp->nim > next->nim && next->next != NULL){
-                    cout<<"temp : "<<temp->nim<<" prev :  "<<prev->nim<<" next : "<<next->nim<<endl;
-                    next = next->next;
-                    prev = prev->next;
-                }
-                if(temp->nim < next->nim){
-                    cout<<"Insert Middle"<<endl;
-                    prev->next = temp;
-                    temp->next = next;
-                } else {
-                    /*
-                    ! BUG / Error
-                    ! jika memasukkan nim yang sama nim yang baru akan menjadi nim terakhir dan menghapus
-                    ! semua data setelahnya
-                    */
-                    cout<<"insert : "<<temp->nim<<"next : "<<next->nim<<endl;
-                    cout<<"Insert last"<<endl;
-                    next->next = temp;
-                }
-            }
+            prev->next = temp;
+            temp->next = next;
         }
     }
 }
@@ -82,67 +48,32 @@ void print(){
         Node* temp = new Node;
         temp = head;
         while(temp->next != NULL){
-            cout<<" | this : "<<temp<<" | NIM : "<<temp->nim<<" | Nama : "<<temp->nama<<" | Jurusan : "<<temp->jurusan<<" | next : "<<temp->next<<endl;
+            cout<<" | NIM : "<<temp->nim<<" | Nama : "<<temp->nama<<" | Jurusan : "<<temp->jurusan<<endl;
             temp = temp->next;
         }
-        cout<<" | this : "<<temp<<" | NIM : "<<temp->nim<<" | Nama : "<<temp->nama<<" | Jurusan : "<<temp->jurusan<<" | next : "<<temp->next<<endl;
+        cout<<" | NIM : "<<temp->nim<<" | Nama : "<<temp->nama<<" | Jurusan : "<<temp->jurusan<<endl;
     }
 }
 void deleteNIM(long int nim){
-    bool deleted = false;
+    Node* prev = new Node;
+    Node* next = new Node;
+    next = head;
     if(isEmpty()){
-        cout<<"Data Kosong"<<endl;
+        cout<<"Data kosong"<<endl;
+    } else if(head->nim == nim){
+        head = head->next;
     } else {
-        Node* prev = head;
-        Node* temp = head->next;
-        if(head->nim == nim){
-            if(head->next != NULL){
-                delete head;
-                head = temp;
-                cout<<"Data dihapus"<<endl;
-            } else {
-                delete head;
-                cout<<"Data dihapus"<<endl;
-                init();
-            }
+        while(next->next != NULL && nim != next->nim){
+            prev = next;
+            next = next->next;
+        }
+        if(nim == next->nim){
+            prev->next = next->next;
+            delete next;
         } else {
-            if(temp != NULL){
-                Node* next = temp->next;
-                while(next != NULL){
-                    if(temp->nim == nim){
-                        delete temp;
-                        prev->next = next;
-                        deleted = true;
-                        cout<<"Data dihapus"<<endl;
-                        break;
-                    } else {
-                        prev = prev->next;
-                        temp = temp->next;
-                        next = next->next;
-                    }
-                }
-                if(temp->nim == nim && next == NULL){
-                    delete temp;
-                    prev->next = NULL;
-                    cout<<"Data dihapus"<<endl;
-                } else if(deleted == false){
-                    cout<<"NIM tidak ditemukan"<<endl;
-                }
-            } else {
-                cout<<"NIM tidak ditemukan"<<endl;
-            }
+            cout<<"NIM tidak ada"<<endl;
         }
     }
-}
-int countNode(){
-    int count = 1;
-    Node* temp = new Node;
-    temp = head;
-    while(temp->next != NULL){
-        count++;
-        temp = temp->next;
-    }
-    return count;
 }
 int main(){
     init();
@@ -158,17 +89,29 @@ int main(){
             case 1:
                 cout<<"Masukkan NIM mahasiswa : ";
                 cin>>nim;
-                cin.ignore();
-                cout<<"Masukkan nama mahasiswa : ";
-                getline(cin,nama);
-                cout<<"Masukkan jurusan mahasiswa : ";
-                getline(cin,jurusan);
-                autoPush(nim,nama,jurusan);
+                if(cin.fail()){
+                    cout<<"Input anda salah"<<endl;
+                    cin.clear();
+                    cin.ignore(INT_MAX,'\n');
+                } else {
+                    cin.ignore();
+                    cout<<"Masukkan nama mahasiswa : ";
+                    getline(cin,nama);
+                    cout<<"Masukkan jurusan mahasiswa : ";
+                    getline(cin,jurusan);
+                    autoPush(nim,nama,jurusan);
+                }            
                 break;
             case 2:
                 cout<<"Masukkan NIM mahasiswa yang akan dihapus : ";
                 cin>>nim;
-                deleteNIM(nim);
+                if(cin.fail()){
+                    cout<<"Input anda salah"<<endl;
+                    cin.clear();
+                    cin.ignore(INT_MAX,'\n');
+                } else {
+                    deleteNIM(nim);
+                }
                 break;
             case 3:
                 print();
@@ -182,67 +125,3 @@ int main(){
         }
     }
 }
-
-// ============== abaikan ===================
-/*
-void deleteNIM(unsigned int nim){
-    Node* temp = new Node;
-    Node* prev = new Node;
-    temp = head;
-    prev = head;
-    if(isEmpty()){
-        cout<<"Empty"<<endl;
-    } else {
-        //* head fixed
-        if(head->nim == nim){
-            delete head;
-            head = temp->next;
-        } else {
-            //* middle
-            while(temp->next != NULL){
-                if(temp->nim == nim){
-                    delete temp;
-                }
-                temp = temp->next;
-            }
-            //* end
-            if(temp->nim == nim){
-                delete temp;
-            }
-        }
-    }
-}
-*/
-/*
-void pushHead(unsigned long int nim,string nama,string jurusan){
-    Node* temp = new Node;
-    temp->nim = nim;
-    temp->nama = nama;
-    temp->jurusan = jurusan;
-    if(isEmpty()){
-        head = temp;
-        head->next = NULL;
-    } else {
-        temp->next = head;
-        head = temp;
-    }
-}
-void pushBack(long int nim,string nama,string jurusan){
-    Node* temp = new Node;
-    Node* last = new Node;
-    last = head;
-    temp->nim = nim;
-    temp->nama = nama;
-    temp->jurusan = jurusan;
-    temp->next = NULL;
-    if(isEmpty()){
-        head = temp;
-        head->next = NULL;
-    } else {
-        while(last->next != NULL){
-            last = last->next;
-        }
-        last->next = temp;
-    }
-}
-*/
