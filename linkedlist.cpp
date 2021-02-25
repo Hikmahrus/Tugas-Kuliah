@@ -35,9 +35,11 @@ void autoPush(unsigned long int nim,string nama,string jurusan){
         }
         if(next == NULL){
             prev->next = temp;
-        } else {
+        } else if(temp->nim != next->nim){
             prev->next = temp;
             temp->next = next;
+        } else {
+            cout<<"NIM sudah ada"<<endl;
         }
     }
 }
