@@ -14,7 +14,7 @@ void init(){
 bool isEmpty(){
     return (head == NULL) ? true : false;
 }
-void autoPush(unsigned long int nim,string nama,string jurusan){
+void autoPush(long int nim,string nama,string jurusan){
     Node* temp = new Node;
     Node* next = new Node;
     Node* prev = new Node;
